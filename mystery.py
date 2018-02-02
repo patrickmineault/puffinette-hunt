@@ -66,3 +66,6 @@ class Mystery(object):
   def send(self):
     '''Send the updated pixels to the display.'''
     self._sock.send(self._data)
+
+  def cleanup(self):
+    self._sock.close()

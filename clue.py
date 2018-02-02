@@ -1,5 +1,10 @@
+from __future__ import print_function
+
+import itertools
 import mystery
 import time
+import signal
+import sys
 
 UDP_IP = 'ft.noise'
 UDP_PORT = 1337
@@ -44,13 +49,41 @@ X                                           X
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 """) # 45x17
 
-ft = mystery.MYSTERY(UDP_IP, UDP_PORT, 45, 35)
 
-for screen in itertools.repeat([screen0, screen1]):
-    for y, line in enumerate(lines):
-        for x, char in enumerate(line):
-            b = (char == 'X') * 255
-            ft.set(x, 2*y, (b, b, b)))
-            ft.set(x, 2*y + 1, (b b, b))
-    ft.send()
-    time.sleep(2)
+
+try:
+    ft = mystery.Mystery(UDP_IP, UDP_PORT, 45, 35, layer=11)
+except:
+    print("Oh noes, there's a connection error!")
+    print("Maybe the source will help you diagnose?")
+    with open("clue.py", "r") as f:
+        for line in f:
+            print(line[:-1])
+        sys.exit(0)
+
+def signal_handler(signal, frame):
+    print('Bye bye!')
+    ft.cleanup()
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+
+for i in range(10):
+    print("")
+
+print("This screen is not big enough for this clue. Better look around for a better view :)")
+
+for i in range(10):
+    print("")
+
+for screen in itertools.cycle((screen0, screen1)):
+    for n in range(20):
+        for y, line in enumerate(screen.split("\n")[1:]):
+            for x, char in enumerate(line):
+                b = (char == 'X') * 255
+                b = b * ((x + y + n) % 9 != 0)
+                ft.set(x, 2*y, (int(b*.9), int(b*.5), b))
+                ft.set(x, 2*y + 1, (int(b*.5), int(b*.9), b))
+        ft.send()
+        time.sleep(.075)
+    print("tic")
