@@ -1,9 +1,11 @@
 from __future__ import print_function
 
-import itertools
 import mystery
+
+import itertools
 import time
 import signal
+import socket
 import sys
 
 UDP_IP = 'ft.noise'
@@ -38,9 +40,9 @@ X  XXXXXXXXXXXX   XXXXXXXXXX                X
 X  XXXXXXXXXXXX   XXXXXXXXXX        XXX     X
 X         XXXXX   XXXX            XXXXXXXX  X
 X        XXXXX    XXXXXXXXX     XXXXXXXXXX  X
-X       XXXXX     XXXXXXXXXXX  XXXXXXXX     X
-X      XXXXX            XXXXX  XXXXXXXX     X
-X     XXXXX      XX     XXXXX  XXXXXXXX     X
+X       XXXXX     XXXXXXXXXXX  XXXX XXX     X
+X      XXXXX            XXXXX  XXX  XXX     X
+X     XXXXX      XX     XXXXX  XXXX XXX     X
 X     XXXXX      XXXXXXXXXXX    XXXXXXXXXX  X
 X    XXXXX        XXXXXXXXX       XXXXXXXX  X
 X                                   XXX     X
@@ -50,10 +52,20 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 """) # 45x17
 
 
+ntries = 24
+success = False
 
-try:
-    ft = mystery.Mystery(UDP_IP, UDP_PORT, 45, 35, layer=11)
-except:
+for i in range(ntries):
+    try:
+        ft = mystery.Mystery(UDP_IP, UDP_PORT, 45, 35, layer=11)
+        success = True
+    except socket.gaierror:
+        print("Connecting (%d/%d)" % (i + 1, ntries))
+        time.sleep(5)
+    if success:
+        continue
+
+if not success:
     print("Oh noes, there's a connection error!")
     print("Maybe the source will help you diagnose?")
     with open("clue.py", "r") as f:
