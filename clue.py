@@ -52,7 +52,7 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 """) # 45x17
 
 
-ntries = 24
+ntries = 30
 success = False
 
 for i in range(ntries):
